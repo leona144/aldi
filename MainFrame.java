@@ -14,26 +14,16 @@ public class MainFrame extends JFrame {
     private Grid grid;
     private GridPanel gridPanel;
     private JTextArea logArea;
-
-    // Setup mode variables
     private enum SetupState { SELECT_ROBOT1_START, SELECT_ROBOT1_TARGET,
         SELECT_ROBOT2_START, SELECT_ROBOT2_TARGET, READY }
     private SetupState currentSetupState = SetupState.SELECT_ROBOT1_START;
-
-    // Robot positions
     private int robot1StartX = -1, robot1StartY = -1;
     private int robot1TargetX = -1, robot1TargetY = -1;
     private int robot2StartX = -1, robot2StartY = -1;
     private int robot2TargetX = -1, robot2TargetY = -1;
-
-    // Visual indicators
     private String setupInstruction = "Click to select Robot1 Start Position";
-
-    // Obstacle editing
     private JButton obstacleButton;
     private JButton clearObstaclesButton;
-
-    // Static robot editing
     private JButton staticRobotButton;
     private JButton clearStaticRobotsButton;
     private boolean staticRobotEditMode = false;
@@ -43,19 +33,11 @@ public class MainFrame extends JFrame {
         setTitle("JADE Multi-Robot Coordination - Adaptive Static Robots");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
-
-        // Create a 5x5 grid
         grid = new Grid(5, 5);
-
-        // Create and set up the grid panel
         gridPanel = new GridPanel(grid);
-
-        // Add mouse listener for position selection AND obstacle editing
         GridMouseListener mouseListener = new GridMouseListener();
         gridPanel.addMouseListener(mouseListener);
         gridPanel.addMouseMotionListener(mouseListener);
-
-        // Add key listener for ESC to exit edit mode
         gridPanel.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -72,8 +54,6 @@ public class MainFrame extends JFrame {
         gridPanel.setFocusable(true);
 
         add(gridPanel, BorderLayout.CENTER);
-
-        // Create log area
         logArea = new JTextArea(15, 70);
         logArea.setEditable(false);
         logArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
@@ -81,13 +61,9 @@ public class MainFrame extends JFrame {
         JScrollPane logScroll = new JScrollPane(logArea);
         logScroll.setBorder(BorderFactory.createTitledBorder("Simulation Log"));
         add(logScroll, BorderLayout.EAST);
-
-        // Control panel - 5 rows for more buttons
         JPanel controlPanel = new JPanel(new GridLayout(5, 4, 10, 10));
         controlPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         controlPanel.setBackground(new Color(248, 248, 248));
-
-        // Row 1 - Setup buttons
         JButton setupButton = createStyledButton("Start Setup Mode",
                 new Color(76, 175, 80), "Configure robot positions manually");
 
@@ -1305,3 +1281,4 @@ public class MainFrame extends JFrame {
     }
 
 }
+
