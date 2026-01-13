@@ -75,8 +75,6 @@ public class MainFrame extends JFrame {
 
         JButton loadButton = createStyledButton("Load Preset",
                 new Color(156, 39, 176), "Load a predefined scenario");
-
-        // Row 2 - Obstacle buttons
         obstacleButton = createStyledButton("Place Obstacles",
                 new Color(255, 87, 34), "Click cells to add/remove obstacles");
 
@@ -88,8 +86,6 @@ public class MainFrame extends JFrame {
 
         JButton wallButton = createStyledButton("Add Wall",
                 new Color(121, 85, 72), "Add a wall of obstacles");
-
-        // Row 3 - Static Robot buttons
         staticRobotButton = createStyledButton("Add Static Robots",
                 new Color(128, 0, 128), "Click cells to add/remove static robots");
 
@@ -114,8 +110,6 @@ public class MainFrame extends JFrame {
 
         JButton statsButton = createStyledButton("Statistics",
                 new Color(26, 35, 126), "Show simulation statistics");
-
-        // Row 5 - Utility buttons
         JButton clearLogButton = createStyledButton("Clear Log",
                 new Color(96, 125, 139), "Clear the log panel");
 
@@ -149,8 +143,6 @@ public class MainFrame extends JFrame {
         statsButton.addActionListener(e -> showStatistics());
         manualStaticButton.addActionListener(e -> manualStaticRobotSetup());
         updateStaticButton.addActionListener(e -> updateStaticRobots());
-
-        // Add buttons to control panel
         controlPanel.add(setupButton);
         controlPanel.add(resetSetupButton);
         controlPanel.add(autoSetupButton);
@@ -171,25 +163,17 @@ public class MainFrame extends JFrame {
         controlPanel.add(deadlockButton);
         controlPanel.add(manualStaticButton);
         controlPanel.add(updateStaticButton);
-
         add(controlPanel, BorderLayout.SOUTH);
-
-        // Setup panel
         JPanel setupPanel = createSetupPanel();
         add(setupPanel, BorderLayout.WEST);
-
-        // Set window size and position
         setSize(1200, 900);
         setLocationRelativeTo(null);
         setVisible(true);
-
         logMessage("=== JADE MULTI-ROBOT COORDINATION WITH ADAPTIVE STATIC ROBOTS ===");
         logMessage("New Feature: Static robots move after receiving 5 requests");
         logMessage("Static robots temporarily move to open path, then return to original position");
         logMessage("Right-click to remove obstacles/static robots while in edit mode");
         logMessage("-----------------------------------------------");
-
-        // Start with auto setup
         autoSetup();
     }
 
@@ -199,17 +183,12 @@ public class MainFrame extends JFrame {
             int cellSize = gridPanel.getCellSize();
             int col = e.getX() / cellSize;
             int row = e.getY() / cellSize;
-
-            // Validate click within grid
             if (row >= 0 && row < 5 && col >= 0 && col < 5) {
                 if (gridPanel.isBlockEditMode()) {
-                    // In obstacle edit mode
                     handleObstacleEdit(row, col, e.getButton() == MouseEvent.BUTTON3);
                 } else if (staticRobotEditMode) {
-                    // In static robot edit mode
                     handleStaticRobotEdit(row, col, e.getButton() == MouseEvent.BUTTON3);
                 } else {
-                    // In normal setup mode
                     handleGridClick(row, col);
                 }
             }
@@ -217,7 +196,6 @@ public class MainFrame extends JFrame {
 
         @Override
         public void mouseDragged(MouseEvent e) {
-            // Allow dragging to place/remove multiple obstacles or static robots
             int cellSize = gridPanel.getCellSize();
             int col = e.getX() / cellSize;
             int row = e.getY() / cellSize;
@@ -235,18 +213,15 @@ public class MainFrame extends JFrame {
     }
 
     private void handleObstacleEdit(int row, int col, boolean rightClick) {
-        // Toggle based on mouse button
         boolean shouldErase = rightClick != gridPanel.isEraseMode();
 
         if (shouldErase) {
-            // Remove obstacle if present
             if (grid.isCellBlocked(row, col)) {
                 grid.setCellBlocked(row, col, false);
                 logMessage("[OBSTACLE] Removed obstacle from (" + row + "," + col + ")");
                 gridPanel.repaint();
             }
         } else {
-            // Add obstacle if cell is empty
             if (!grid.isCellBlocked(row, col) && grid.getRobotAt(row, col) == null) {
                 grid.setCellBlocked(row, col, true);
                 logMessage("[OBSTACLE] Added obstacle at (" + row + "," + col + ")");
@@ -259,7 +234,6 @@ public class MainFrame extends JFrame {
         boolean shouldErase = rightClick != eraseStaticMode;
 
         if (shouldErase) {
-            // Remove static robot if present
             RobotAgent robot = grid.getRobotAt(row, col);
             if (robot != null && robot.isStatic()) {
                 grid.freeCell(row, col);
@@ -267,12 +241,8 @@ public class MainFrame extends JFrame {
                 gridPanel.repaint();
             }
         } else {
-            // Add static robot if cell is empty
             if (!grid.isCellBlocked(row, col) && grid.getRobotAt(row, col) == null) {
-                // We'll create static robot later through manual setup or update
                 logMessage("[STATIC] Marked cell (" + row + "," + col + ") for static robot");
-                // For now, just mark it visually
-                // The actual static robot will be created when starting simulation
             }
         }
     }
@@ -290,23 +260,16 @@ public class MainFrame extends JFrame {
         obstacleButton.setText(eraseMode ? "Exit Remove Mode" : "Exit Place Mode");
         obstacleButton.setBackground(eraseMode ? new Color(255, 152, 0) : new Color(255, 87, 34));
         obstacleButton.setToolTipText("Click to exit obstacle edit mode");
-
-        // Disable static robot edit mode if active
         if (staticRobotEditMode) {
             exitStaticRobotEditMode();
         }
-
-        // Force ready state
         currentSetupState = SetupState.READY;
-
         logMessage("[OBSTACLE] Entered obstacle edit mode");
         logMessage("[OBSTACLE] " + (eraseMode ?
                 "Click cells to REMOVE obstacles (Left-click = remove, Right-click = add)" :
                 "Click cells to ADD obstacles (Left-click = add, Right-click = remove)"));
         logMessage("[OBSTACLE] Drag to place/remove multiple obstacles");
         logMessage("[OBSTACLE] Press ESC or click 'Exit Place Mode' to finish");
-
-        // Request focus for key listener
         gridPanel.requestFocusInWindow();
     }
 
@@ -321,7 +284,6 @@ public class MainFrame extends JFrame {
 
         gridPanel.repaint();
     }
-
     private void toggleStaticRobotEditMode(boolean eraseMode) {
         if (staticRobotEditMode) {
             exitStaticRobotEditMode();
@@ -329,33 +291,24 @@ public class MainFrame extends JFrame {
             enterStaticRobotEditMode(eraseMode);
         }
     }
-
     private void enterStaticRobotEditMode(boolean eraseMode) {
         staticRobotEditMode = true;
         eraseStaticMode = eraseMode;
         staticRobotButton.setText(eraseMode ? "Exit Remove Static" : "Exit Add Static");
         staticRobotButton.setBackground(eraseMode ? new Color(255, 152, 0) : new Color(128, 0, 128));
         staticRobotButton.setToolTipText("Click to exit static robot edit mode");
-
-        // Disable obstacle edit mode if active
         if (gridPanel.isBlockEditMode()) {
             exitObstacleEditMode();
         }
-
-        // Force ready state
         currentSetupState = SetupState.READY;
-
         logMessage("[STATIC] Entered static robot edit mode");
         logMessage("[STATIC] " + (eraseMode ?
                 "Click cells to REMOVE static robots (Left-click = remove, Right-click = add)" :
                 "Click cells to ADD static robots (Left-click = add, Right-click = remove)"));
         logMessage("[STATIC] Drag to place/remove multiple static robots");
         logMessage("[STATIC] Press ESC or click 'Exit Add Static' to finish");
-
-        // Request focus for key listener
         gridPanel.requestFocusInWindow();
     }
-
     private void exitStaticRobotEditMode() {
         staticRobotEditMode = false;
         staticRobotButton.setText("Add Static Robots");
@@ -1281,4 +1234,5 @@ public class MainFrame extends JFrame {
     }
 
 }
+
 
