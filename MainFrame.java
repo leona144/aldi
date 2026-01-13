@@ -74,7 +74,7 @@ public class MainFrame extends JFrame {
         add(gridPanel, BorderLayout.CENTER);
 
         // Create log area
-        logArea = new JTextArea(15, 80);
+        logArea = new JTextArea(15, 70);
         logArea.setEditable(false);
         logArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
         logArea.setBackground(new Color(240, 240, 240));
@@ -1303,4 +1303,5 @@ public class MainFrame extends JFrame {
             }
         });
     }
+
 }
