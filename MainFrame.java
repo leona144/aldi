@@ -343,16 +343,12 @@ public class MainFrame extends JFrame {
 
     private void createRandomMaze() {
         clearAllObstacles();
-
-        // Create random maze pattern (about 30% of cells)
         int totalCells = 5 * 5;
         int obstacleCount = (int)(totalCells * 0.3);
 
         for (int i = 0; i < obstacleCount; i++) {
             int row = (int)(Math.random() * 5);
             int col = (int)(Math.random() * 5);
-
-            // Don't block start/target positions
             if ((row == robot1StartX && col == robot1StartY) ||
                     (row == robot1TargetX && col == robot1TargetY) ||
                     (row == robot2StartX && col == robot2StartY) ||
@@ -368,11 +364,8 @@ public class MainFrame extends JFrame {
     }
 
     private void addWall() {
-        // Add a vertical wall in the middle
         for (int row = 0; row < 5; row++) {
-            int col = 2; // Middle column
-
-            // Don't block start/target positions
+            int col = 2;
             if ((row == robot1StartX && col == robot1StartY) ||
                     (row == robot1TargetX && col == robot1TargetY) ||
                     (row == robot2StartX && col == robot2StartY) ||
@@ -397,8 +390,6 @@ public class MainFrame extends JFrame {
 
     private void updateStaticRobots() {
         logMessage("[STATIC] Updating static robots...");
-        // This would normally create static robots at marked positions
-        // For now, we'll just log a message
         logMessage("[STATIC] Use 'Adaptive Static Robots' button for pre-configured scenario");
     }
 
@@ -414,7 +405,6 @@ public class MainFrame extends JFrame {
     }
 
     private void handleGridClick(int row, int col) {
-        // Check if cell is blocked before setting position
         if (grid.isCellBlocked(row, col)) {
             logMessage("[SETUP] Cannot place robot on blocked cell (" + row + "," + col + ")");
             JOptionPane.showMessageDialog(this,
@@ -473,64 +463,46 @@ public class MainFrame extends JFrame {
         setupPanel.setBorder(BorderFactory.createTitledBorder("Robot Configuration"));
         setupPanel.setBackground(new Color(248, 248, 248));
         setupPanel.setPreferredSize(new Dimension(250, 0));
-
-        // Title
         JLabel titleLabel = new JLabel("Robot Setup");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
         titleLabel.setForeground(new Color(33, 33, 33));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        // Instruction label
         JLabel instructionLabel = new JLabel(setupInstruction);
         instructionLabel.setFont(new Font("Arial", Font.ITALIC, 12));
         instructionLabel.setForeground(new Color(100, 100, 100));
         instructionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         instructionLabel.setName("instructionLabel");
-
-        // Robot 1 configuration
         JPanel robot1Panel = createRobotConfigPanel("Robot 1 (Red)",
                 robot1StartX, robot1StartY, robot1TargetX, robot1TargetY, Color.RED);
         robot1Panel.setName("robot1Panel");
-
-        // Robot 2 configuration
         JPanel robot2Panel = createRobotConfigPanel("Robot 2 (Blue)",
                 robot2StartX, robot2StartY, robot2TargetX, robot2TargetY, Color.BLUE);
         robot2Panel.setName("robot2Panel");
-
-        // Static robots info
         JPanel staticPanel = new JPanel();
         staticPanel.setLayout(new BoxLayout(staticPanel, BoxLayout.Y_AXIS));
         staticPanel.setBorder(BorderFactory.createTitledBorder("Static Robots Configuration"));
         staticPanel.setBackground(new Color(250, 250, 250));
         staticPanel.setMaximumSize(new Dimension(230, 150));
-
         JLabel staticInfo = new JLabel("<html><center>Click 'Add Static Robots' to place<br>static robots on the grid<br><br>Static robots will block path<br>until they receive enough requests<br>then turn purple and move temporarily</center></html>");
         staticInfo.setFont(new Font("Arial", Font.PLAIN, 11));
         staticInfo.setAlignmentX(Component.CENTER_ALIGNMENT);
-
         JPanel staticControls = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
         staticControls.setBackground(new Color(250, 250, 250));
-
         JButton quickStaticBtn = new JButton("Quick Static Setup");
         quickStaticBtn.setFont(new Font("Arial", Font.PLAIN, 10));
         quickStaticBtn.setBackground(new Color(128, 0, 128));
         quickStaticBtn.setForeground(Color.WHITE);
         quickStaticBtn.addActionListener(e -> quickStaticSetup());
         staticControls.add(quickStaticBtn);
-
         staticPanel.add(Box.createVerticalStrut(5));
         staticPanel.add(staticInfo);
         staticPanel.add(Box.createVerticalStrut(5));
         staticPanel.add(staticControls);
-
-        // Status label
         JLabel statusLabel = new JLabel("Status: Setup Required");
         statusLabel.setFont(new Font("Arial", Font.BOLD, 12));
         statusLabel.setForeground(Color.RED);
         statusLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         statusLabel.setName("statusLabel");
-
-        // Add components
         setupPanel.add(Box.createVerticalStrut(10));
         setupPanel.add(titleLabel);
         setupPanel.add(Box.createVerticalStrut(10));
@@ -549,11 +521,8 @@ public class MainFrame extends JFrame {
     }
 
     private void quickStaticSetup() {
-        // Create a simple static robot blocking scenario
         clearAllStaticRobots();
         clearAllObstacles();
-
-        // Set up robots in a crossing pattern with static robots blocking
         robot1StartX = 0; robot1StartY = 2;
         robot1TargetX = 4; robot1TargetY = 2;
         robot2StartX = 4; robot2StartY = 2;
@@ -579,8 +548,6 @@ public class MainFrame extends JFrame {
         panel.setBorder(BorderFactory.createTitledBorder(title));
         panel.setBackground(new Color(250, 250, 250));
         panel.setMaximumSize(new Dimension(230, 120));
-
-        // Color indicator
         JPanel colorPanel = new JPanel();
         colorPanel.setBackground(color);
         colorPanel.setPreferredSize(new Dimension(20, 20));
@@ -778,32 +745,22 @@ public class MainFrame extends JFrame {
                 profile.setParameter(Profile.GUI, "false");
 
                 AgentContainer container = rt.createMainContainer(profile);
-
-                // Clear grid
                 resetSimulation();
-
-                // Set up adaptive static robot scenario
-                // Robot1 and Robot2 need to go THROUGH row 2
                 robot1StartX = 0; robot1StartY = 2;
                 robot1TargetX = 4; robot1TargetY = 2;
                 robot2StartX = 4; robot2StartY = 2;
                 robot2TargetX = 0; robot2TargetY = 2;
 
                 logMessage("[ADAPTIVE] Creating BLOCKING static robots at row 2...");
-
-                // Create static robots that ACTUALLY BLOCK the path at (2,2)
-                // We need static robots in the exact path
                 String[] staticRobotNames = {"BlockTop", "BlockMiddle", "BlockBottom"};
                 int[][] staticPositions = {
-                        {2, 1},  // Left of middle - BLOCKS Robot1's path
-                        {2, 2},  // MIDDLE - THIS IS THE KEY! Blocks the actual path
-                        {2, 3}   // Right of middle - BLOCKS Robot2's path
+                        {2, 1}, 
+                        {2, 2},  
+                        {2, 3}  
                 };
-
-                // Original positions for static robots to return to
                 int[][] originalPositions = {
                         {2, 1},
-                        {2, 2},  // Middle robot's original position
+                        {2, 2}, 
                         {2, 3}
                 };
 
@@ -916,9 +873,6 @@ public class MainFrame extends JFrame {
 
                 AgentContainer container = rt.createMainContainer(profile);
                 resetSimulation();
-
-                // Create completely blocked scenario
-                // Robot1 surrounded by static robots
                 robot1StartX = 2; robot1StartY = 2;
                 robot1TargetX = 4; robot1TargetY = 4;
 
@@ -942,8 +896,8 @@ public class MainFrame extends JFrame {
                             blockers[i][1],
                             true,
                             3, // requests needed
-                            blockers[i][0], // originalX
-                            blockers[i][1], // originalY
+                            blockers[i][0], 
+                            blockers[i][1], 
                             grid,
                             this
                     };
@@ -952,8 +906,6 @@ public class MainFrame extends JFrame {
                     blocker.start();
                     logMessage("[TEST] Created blocker at (" + blockers[i][0] + "," + blockers[i][1] + ")");
                 }
-
-                // Create Robot1 (trapped)
                 Object[] robot1Args = {
                         "Robot1",
                         robot1StartX,
@@ -989,7 +941,6 @@ public class MainFrame extends JFrame {
     }
 
     private void showStatistics() {
-        // This would show move counts, collision attempts, etc.
         logMessage("[STATS] Statistics feature would show:");
         logMessage("[STATS] - Total moves made");
         logMessage("[STATS] - Collision attempts prevented");
@@ -1005,8 +956,6 @@ public class MainFrame extends JFrame {
                     "Setup Incomplete", JOptionPane.WARNING_MESSAGE);
             return;
         }
-
-        // Check if start/target positions are blocked
         if (grid.isCellBlocked(robot1StartX, robot1StartY) ||
                 grid.isCellBlocked(robot1TargetX, robot1TargetY) ||
                 grid.isCellBlocked(robot2StartX, robot2StartY) ||
@@ -1080,8 +1029,6 @@ public class MainFrame extends JFrame {
 
                 logMessage("[SYSTEM] ✓ Simulation started!");
                 logMessage("[SYSTEM] -----------------------------------------------");
-
-                // Exit edit modes if active
                 if (gridPanel.isBlockEditMode()) {
                     exitObstacleEditMode();
                 }
@@ -1234,5 +1181,6 @@ public class MainFrame extends JFrame {
     }
 
 }
+
 
 
